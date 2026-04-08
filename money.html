@@ -38,7 +38,7 @@
         let player;
         // โหลด YouTube API
         const tag = document.createElement('script');
-        tag.src = "https://youtu.be/GfTrxgjoAQE?si=5GIq9iz_x6xOsSs0";
+        tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -46,7 +46,7 @@
             player = new YT.Player('youtube-player', {
                 height: '0',
                 width: '0',
-                videoId: 'embed/GfTrxgjoAQE', // เช่น https://youtu.be/dQw4w9WgXcQ ID คือ dQw4w9WgXcQ
+                videoId: 'GfTrxgjoAQE', // เช่น https://youtu.be/dQw4w9WgXcQ ID คือ dQw4w9WgXcQ
                 events: {
                     'onReady': onPlayerReady
                 }
