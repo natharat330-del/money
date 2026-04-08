@@ -1,42 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-<style>
-  /* ซ่อนเนื้อหาไว้ก่อน */
-  #surprise {
-    display: none;
-    text-align: center;
-  }
-  
-  .trigger-btn {
-    padding: 15px 30px;
-    font-size: 20px;
-    cursor: pointer;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ของขวัญสำหรับคุณ</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        /* สไตล์ของปุ่ม */
+        #scare-button {
+            padding: 20px 40px;
+            font-size: 24px;
+            cursor: pointer;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        #scare-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* หน้าจอจั๊มสแกร์ (ซ่อนไว้ตอนแรก) */
+        #jumpscare-overlay {
+            display: none; /* ซ่อนไว้ */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #jumpscare-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* ให้รูปเต็มจอ */
+        }
+
+        /* เอฟเฟกต์สั่น */
+        .shake {
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            100% { transform: translate(3px, 1px) rotate(-1deg); }
+        }
+    </style>
 </head>
 <body>
 
-  <div style="text-align:center; margin-top: 50px;">
-    <h2>ลองกดปุ่มเพื่อดูผลลัพธ์</h2>
-    <button class="trigger-btn" onclick="showContent()">คลิกตรงนี้!</button>
-  </div>
+    <button id="scare-button">กดเพื่อรับรางวัล! 🎁</button>
 
-  <div id="surprise">
-    <h1 style="color: red;">เซอร์ไพรส์! 🎉</h1>
-    <p>นี่คือตัวอย่างการใช้ JavaScript เปลี่ยนการแสดงผล</p>
-  </div>
+    <div id="jumpscare-overlay">
+        <img src="https://path-to-your-scary-image.jpg" id="ghost-img">
+    </div>
 
-  <script>
-    function showContent() {
-      // สั่งให้ element ที่มี id 'surprise' แสดงตัวออกมา
-      document.getElementById("surprise").style.display = "block";
-      
-      // เพิ่มเติม: สามารถสั่งเล่นเสียงได้ด้วยคำสั่ง .play() ของ Audio Object
-      // let audio = new Audio('url_ของไฟล์เสียง');
-      // audio.play();
-    }
-  </script>
+    <audio id="scare-sound" src="https://path-to-your-scary-sound.mp3"></audio>
 
+    <script>
+        const button = document.getElementById('scare-button');
+        const overlay = document.getElementById('jumpscare-overlay');
+        const sound = document.getElementById('scare-sound');
+        const ghostImg = document.getElementById('ghost-img');
+
+        button.addEventListener('click', () => {
+            // 1. แสดง Overlay
+            overlay.style.display = 'flex';
+            
+            // 2. เล่นเสียง (ปรับระดับเสียงให้ดังสุด)
+            sound.volume = 1.0;
+            sound.play();
+
+            // 3. เพิ่มเอฟเฟกต์สั่นให้รูปภาพ
+            ghostImg.classList.add('shake');
+
+            // (เสริม) กดแล้วให้เข้าสู่โหมด Fullscreen เพื่อความสมจริง
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+
+            // 4. ตั้งเวลาปิด (ตัวอย่าง: 3 วินาทีแล้วหายไป)
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
+
+
