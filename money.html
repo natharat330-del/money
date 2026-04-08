@@ -2,69 +2,25 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ของขวัญสำหรับคุณ</title>
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-            font-family: sans-serif;
-            overflow: hidden;
-        }
-
-        /* สไตล์ของปุ่ม */
-        #scare-button {
-            padding: 20px 40px;
-            font-size: 24px;
-            cursor: pointer;
-            background-color: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-
-        #scare-button:hover {
-            transform: scale(1.1);
-        }
-
-        /* หน้าจอจั๊มสแกร์ (ซ่อนไว้ตอนแรก) */
+        body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0; overflow: hidden; }
+        #scare-button { padding: 20px 40px; font-size: 24px; cursor: pointer; background-color: #ff4757; color: white; border: none; border-radius: 10px; z-index: 10; }
+        
         #jumpscare-overlay {
-            display: none; /* ซ่อนไว้ */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            z-index: 999;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: black; z-index: 999; justify-content: center; align-items: center;
         }
+        #jumpscare-overlay img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* ซ่อนเครื่องเล่น YouTube */
+        #youtube-player { position: absolute; top: -9999px; left: -9999px; }
 
-        #jumpscare-overlay img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* ให้รูปเต็มจอ */
-        }
-
-        /* เอฟเฟกต์สั่น */
-        .shake {
-            animation: shake 0.1s infinite;
-        }
-
+        .shake { animation: shake 0.1s infinite; }
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            100% { transform: translate(3px, 1px) rotate(-1deg); }
+            0% { transform: translate(5px, 5px); }
+            50% { transform: translate(-10px, -5px); }
+            100% { transform: translate(10px, 5px); }
         }
     </style>
 </head>
@@ -73,44 +29,55 @@
     <button id="scare-button">กดเพื่อรับรางวัล! 🎁</button>
 
     <div id="jumpscare-overlay">
-        <img src="https://stickershop.line-scdn.net/stickershop/v1/product/26774423/LINEStorePC/main.png?v=1" id="ghost-img">
+        <img src="https://path-to-your-ghost-image.jpg" id="ghost-img">
     </div>
 
-    <audio id="scare-sound" src="https://youtu.be/GfTrxgjoAQE?si=kokJ-wLJjRKNLCDa"></audio>
+    <div id="youtube-player"></div>
 
     <script>
-        const button = document.getElementById('scare-button');
-        const overlay = document.getElementById('jumpscare-overlay');
-        const sound = document.getElementById('scare-sound');
-        const ghostImg = document.getElementById('ghost-img');
+        let player;
+        // โหลด YouTube API
+        const tag = document.createElement('script');
+        tag.src = "https://cms.dmpcdn.com/moviearticle/2020/06/25/d72fa600-b6c8-11ea-8fac-236a281cd6c5_original.jpg";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        button.addEventListener('click', () => {
-            // 1. แสดง Overlay
-            overlay.style.display = 'flex';
-            
-            // 2. เล่นเสียง (ปรับระดับเสียงให้ดังสุด)
-            sound.volume = 1.0;
-            sound.play();
-
-            // 3. เพิ่มเอฟเฟกต์สั่นให้รูปภาพ
-            ghostImg.classList.add('shake');
-
-            // (เสริม) กดแล้วให้เข้าสู่โหมด Fullscreen เพื่อความสมจริง
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            }
-
-            // 4. ตั้งเวลาปิด (ตัวอย่าง: 3 วินาทีแล้วหายไป)
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'embed/GfTrxgjoAQE', // เช่น https://youtu.be/dQw4w9WgXcQ ID คือ dQw4w9WgXcQ
+                events: {
+                    'onReady': onPlayerReady
                 }
-            }, 3000);
-        });
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('scare-button').addEventListener('click', () => {
+                const overlay = document.getElementById('jumpscare-overlay');
+                const ghostImg = document.getElementById('ghost-img');
+
+                overlay.style.display = 'flex';
+                ghostImg.classList.add('shake');
+                
+                // สั่งเล่นเพลงจาก YouTube
+                player.seekTo(0); // เริ่มที่วินาทีที่ 0
+                player.playVideo();
+
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    player.pauseVideo();
+                    if (document.fullscreenElement) document.exitFullscreen();
+                }, 4000); // แสดงผี 4 วินาที
+            });
+        }
     </script>
 </body>
 </html>
-
 
 
