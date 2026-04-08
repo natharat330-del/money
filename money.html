@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  /* ซ่อนเนื้อหาไว้ก่อน */
+  #surprise {
+    display: none;
+    text-align: center;
+  }
+  
+  .trigger-btn {
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+  <div style="text-align:center; margin-top: 50px;">
+    <h2>ลองกดปุ่มเพื่อดูผลลัพธ์</h2>
+    <button class="trigger-btn" onclick="showContent()">คลิกตรงนี้!</button>
+  </div>
+
+  <div id="surprise">
+    <h1 style="color: red;">เซอร์ไพรส์! 🎉</h1>
+    <p>นี่คือตัวอย่างการใช้ JavaScript เปลี่ยนการแสดงผล</p>
+  </div>
+
+  <script>
+    function showContent() {
+      // สั่งให้ element ที่มี id 'surprise' แสดงตัวออกมา
+      document.getElementById("surprise").style.display = "block";
+      
+      // เพิ่มเติม: สามารถสั่งเล่นเสียงได้ด้วยคำสั่ง .play() ของ Audio Object
+      // let audio = new Audio('url_ของไฟล์เสียง');
+      // audio.play();
+    }
+  </script>
+
+</body>
+</html>
