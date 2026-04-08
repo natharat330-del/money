@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>ของขวัญสำหรับคุณ</title>
     <style>
-        body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0; overflow: hidden; }
-        #scare-button { padding: 20px 40px; font-size: 24px; cursor: pointer; background-color: #ff4757; color: white; border: none; border-radius: 10px; z-index: 10; }
+        body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0; overflow: hidden; font-family: sans-serif; }
+        #scare-button { padding: 20px 40px; font-size: 24px; cursor: pointer; background-color: #ff4757; color: white; border: none; border-radius: 10px; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         
         #jumpscare-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -13,14 +13,16 @@
         }
         #jumpscare-overlay img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* ซ่อนเครื่องเล่น YouTube */
+        /* ซ่อนเครื่องเล่นไว้ไกลๆ */
         #youtube-player { position: absolute; top: -9999px; left: -9999px; }
 
         .shake { animation: shake 0.1s infinite; }
         @keyframes shake {
             0% { transform: translate(5px, 5px); }
-            50% { transform: translate(-10px, -5px); }
-            100% { transform: translate(10px, 5px); }
+            25% { transform: translate(-10px, -5px) rotate(1deg); }
+            50% { transform: translate(10px, 5px); }
+            75% { transform: translate(-5px, 10px) rotate(-1deg); }
+            100% { transform: translate(5px, 5px); }
         }
     </style>
 </head>
@@ -36,6 +38,8 @@
 
     <script>
         let player;
+        let isPlayerReady = false;
+
         // โหลด YouTube API
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
@@ -46,38 +50,62 @@
             player = new YT.Player('youtube-player', {
                 height: '0',
                 width: '0',
-                videoId: 'GfTrxgjoAQE', // เช่น https://youtu.be/dQw4w9WgXcQ ID คือ dQw4w9WgXcQ
+                videoId: 'GfTrxgjoAQE',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1
+                },
                 events: {
-                    'onReady': onPlayerReady
+                    'onReady': () => { isPlayerReady = true; }
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            document.getElementById('scare-button').addEventListener('click', () => {
-                const overlay = document.getElementById('jumpscare-overlay');
-                const ghostImg = document.getElementById('ghost-img');
+        document.getElementById('scare-button').addEventListener('click', () => {
+            if (!isPlayerReady) {
+                alert("กรุณารอสักครู่ ระบบกำลังโหลดเสียง...");
+                return;
+            }
 
-                overlay.style.display = 'flex';
-                ghostImg.classList.add('shake');
+            const overlay = document.getElementById('jumpscare-overlay');
+            const ghostImg = document.getElementById('ghost-img');
+
+            // 1. แสดงรูปผี
+            overlay.style.display = 'flex';
+            ghostImg.classList.add('shake');
+            
+            // 2. เล่นเสียง (เร่งเสียงให้ดังที่สุด)
+            player.setVolume(100);
+            player.seekTo(0);
+            player.playVideo();
+
+            // 3. เข้าโหมดเต็มหน้าจอ (รองรับทุก Browser)
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            // 4. ตั้งเวลาปิด (4 วินาที)
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                ghostImg.classList.remove('shake');
+                player.pauseVideo();
                 
-                // สั่งเล่นเพลงจาก YouTube
-                player.seekTo(0); // เริ่มที่วินาทีที่ 0
-                player.playVideo();
-
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
                 }
-
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    player.pauseVideo();
-                    if (document.fullscreenElement) document.exitFullscreen();
-                }, 4000); // แสดงผี 4 วินาที
-            });
-        }
+            }, 4000); 
+        });
     </script>
 </body>
 </html>
-
-
